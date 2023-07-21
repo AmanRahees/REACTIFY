@@ -1,0 +1,84 @@
+{% extends 'home.html' %}
+<!-- Content  -->
+{% block content %}
+<div
+  class="d-flex justify-content-center align-items-center bg-dark"
+  style="height: 100vh"
+>
+  <div class="card bg-success" style="width: 18rem">
+    <div class="card-body">
+      <h5 class="card-title text-center h3">Login</h5>
+      <form id="login-form">
+        <div class="form-group mt-2">
+          <label for="exampleInputEmail1">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            name="username"
+            placeholder="Enter email"
+          />
+        </div>
+        <div class="form-group mt-2">
+          <label for="exampleInputPassword1">Password</label>
+          <input
+            type="password"
+            name="password"
+            class="form-control"
+            placeholder="Password"
+          />
+        </div>
+        <button type="submit" class="btn btn-danger mt-2 float-end">
+          Submit
+        </button>
+        <div class="mt-2">
+          <p>
+            don't have account?
+            <a class="text-warning" href="{% url 'signup' %}">Register</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // JavaScript AJAX code
+  document
+    .getElementById("login-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent form submission
+
+      const formData = new FormData(event.target);
+      const data = {
+        username: formData.get("username"),
+        password: formData.get("password"),
+      };
+
+      fetch("/api/login/", {
+        // Replace with your API URL for JWT token generation
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest", // Some servers require this header for CSRF protection
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Handle the response
+          if (data.access) {
+            // Save the JWT token to local storage or cookies
+            localStorage.setItem("Access", data.access);
+            localStorage.setItem("Refresh", data.refresh);
+            // Redirect the user or perform other actions upon successful login
+            window.location.href = "http://127.0.0.1:8000/"; // Replace with your desired redirect URL
+          } else {
+            alert("Login failed. Please check your credentials.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    });
+</script>
+{% endblock %}
